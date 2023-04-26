@@ -1,4 +1,16 @@
 (module
+  ;; Uncomment the following import statement if you wish to log values using Javascript's console.log
+  ;;
+  ;; (call $log (i32.const <msg_id>) (local.get <some_value_to_be_logged>))
+  ;; Where <msg_id> is some arbitrary integer used to by the host environment to what value is being logged
+  ;;
+  ;; (import "console" "log"
+  ;;   (func $log
+  ;;     (param i32) ;; Message id
+  ;;     (param i32) ;; Logged value
+  ;;   )
+  ;; )
+
   (memory (export "memory") 1)
 
   (global $output_ptr i32 (i32.const 0x0))
@@ -25,7 +37,7 @@
       (i32.const 11)            ;; Take this many bytes from data
     )
 
-    ;; Only convert out of twos-complement if the value is flagged as such and is actually negative
+    ;; Only convert the supplied value out of twos-complement if it is flagged as signed and is actually negative
     (if (i32.and (local.get $is_signed) (i32.lt_s (local.get $int_val) (i32.const 0)))
       (then
         ;; Convert to a positive unsigned integer then remember to add a minus sign!
@@ -38,6 +50,7 @@
       ;; Write the current digit to the output location
       (i32.store8
         (local.get $digit_ptr)
+        ;; In the ASCII collation sequence, digits start at 0x30
         (i32.add (i32.const 0x30) (i32.rem_u (local.get $int_val) (i32.const 10)))
       )
 

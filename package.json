@@ -1,5 +1,5 @@
 {
-  "name": "integer-to-ascii",
+  "name": "wasm-integer-to-ascii",
   "version": "1.1.0",
   "description": "WASM module that converts an i32 to its decimal ASCII representation",
   "main": "main.mjs",
@@ -9,8 +9,8 @@
   },
   "scripts": {
     "build": "wat2wasm ./src/itoa.wat -o ./bin/itoa.wasm",
-    "start": "node ./main.mjs",
-    "buildAndRun": "wat2wasm ./src/itoa.wat -o ./bin/itoa.wasm && node ./main.mjs"
+    "tests": "node ./tests.mjs",
+    "buildAndTest": "wat2wasm ./src/itoa.wat -o ./bin/itoa.wasm && node ./tests.mjs"
   },
   "author": "Chris Whealy",
   "license": "MIT",
