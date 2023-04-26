@@ -1,0 +1,21 @@
+{
+  "name": "integer-to-ascii",
+  "version": "1.1.0",
+  "description": "WASM module that converts an i32 to its decimal ASCII representation",
+  "main": "main.mjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisWhealy/wasm_itoa.git"
+  },
+  "scripts": {
+    "build": "wat2wasm ./src/itoa.wat -o ./bin/itoa.wasm",
+    "start": "node ./main.mjs",
+    "buildAndRun": "wat2wasm ./src/itoa.wat -o ./bin/itoa.wasm && node ./main.mjs"
+  },
+  "author": "Chris Whealy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ChrisWhealy/wasm_itoa/issues"
+  },
+  "homepage": "https://github.com/ChrisWhealy/wasm_itoa#readme"
+}
