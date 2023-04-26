@@ -2,7 +2,7 @@
   ;; Uncomment the following import statement if you wish to log values using Javascript's console.log
   ;;
   ;; (call $log (i32.const <msg_id>) (local.get <some_value_to_be_logged>))
-  ;; Where <msg_id> is some arbitrary integer used to by the host environment to what value is being logged
+  ;; Where <msg_id> is some arbitrary integer used by the host environment to identify what value is being logged
   ;;
   ;; (import "console" "log"
   ;;   (func $log
@@ -16,12 +16,13 @@
   (global $output_ptr i32 (i32.const 0x0))
   (global $minus_sign i32 (i32.const 0x2D))  ;; ASCII "-"
 
+  ;; Maximum number of characters a 32-bit integer can occupy is 11 - 10 plus an optional minus sign
   (data $output " 0000000000")
 
   ;; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   (func (export "itoa")
         (param $int_val   i32) ;; Value to convert
-        (param $is_signed i32) ;; Treat integer value as signed?
+        (param $is_signed i32) ;; Treat integer value as signed( I.E. is it a twos complement value)?
         (result i32 i32)       ;; Offset + length of ASCII result
 
     (local $digit_ptr   i32)
