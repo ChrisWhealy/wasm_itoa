@@ -19,13 +19,13 @@
   ;; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   (func (export "itoa")
         (param $int_val   i32) ;; Value to convert
-        (param $is_signed i32) ;; Treat integer value as signed( I.E. is it a twos complement value)?
+        (param $is_signed i32) ;; Treat integer value as signed (I.E. is it a twos complement value)?
         (result i32 i32)       ;; Offset + length of ASCII result
 
     (local $digit_ptr   i32)
     (local $is_negative i32)
 
-    ;; Maximum number of characters a 32-bit integer can occupy is 11 - 10 plus an optional minus sign
+    ;; Maximum number of characters a 32-bit integer can occupy is 11: 10 digits plus an optional minus sign
     (local.set $digit_ptr (i32.const 10))
 
     ;; Only convert the supplied value out of twos-complement if it is flagged as signed and is actually negative
@@ -37,6 +37,7 @@
       )
     )
 
+    ;; Generate the ASCII value of each decimal digit
     (loop $next_digit
       ;; Write the current digit to the output location
       (i32.store8
@@ -45,6 +46,7 @@
         (i32.add (i32.const 0x30) (i32.rem_u (local.get $int_val) (i32.const 10)))
       )
 
+      ;; Divide $int_val by 10 (ignoring remainder) and decrement output pointer
       (local.set $int_val (i32.div_u (local.get $int_val) (i32.const 10)))
       (local.set $digit_ptr (i32.sub (local.get $digit_ptr) (i32.const 1)))
 
