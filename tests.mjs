@@ -1,12 +1,13 @@
 import { startWasmModule } from "./utils.mjs"
 
 const wasmFilePath = "./bin/itoa.wasm"
+const td = new TextDecoder()
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const hostEnv = {
   "console": {
     "log": (msgId, val) => {
-      let msg = `Unknown message id with value '${val}'`
+      let msg = `Unknown message id '${msgId}' with value '${val}'`
 
       switch (msgId) {
         case 0: msg = `is_twos_comp arg = ${!!val}`
@@ -41,36 +42,26 @@ const testData = [
 const testDataSigned = new Int32Array(testData)
 const testDataUnsigned = new Uint32Array(testData)
 
+const testHandlerFor = (exports, isSigned) => {
+  let testType = isSigned ? "Signed" : "Unsigned"
+
+  return (testValue, idx) => {
+    let [offset, len] = exports.itoa(testValue, isSigned)
+    let asciiVal = td.decode(exports.memory.buffer.slice(offset, offset + len))
+
+    if (asciiVal === `${testValue}`) {
+      console.log(`✅ ${testType} test ${idx} passed`)
+    } else {
+      console.error(`❌ ${testType} test ${idx} failed: Expected ${testValue}, got ${asciiVal}`)
+    }
+  }
+}
+
 startWasmModule(wasmFilePath, hostEnv)
   .then(({ exports }) => {
-    let td = new TextDecoder()
-    let testNum = 0
+    let signedTestHandler = testHandlerFor(exports, true)
+    let unsignedTestHandler = testHandlerFor(exports, false)
 
-    // Test signed values
-    testDataSigned.map(signedValue => {
-      let [offset, len] = exports.itoa(signedValue, true)
-      let asciiVal = td.decode(exports.memory.buffer.slice(offset, offset + len))
-
-      if (asciiVal === `${signedValue}`) {
-        console.log(`✅ Test ${testNum} passed`)
-      } else {
-        console.error(`❌ Test ${testNum} failed: Expected signed value ${signedValue}, got ${asciiVal}`)
-      }
-
-      testNum++
-    })
-
-    // Test unsigned values
-    testDataUnsigned.map(unsignedValue => {
-      let [offset, len] = exports.itoa(unsignedValue, false)
-      let asciiVal = td.decode(exports.memory.buffer.slice(offset, offset + len))
-
-      if (asciiVal === `${unsignedValue}`) {
-        console.log(`✅ Test ${testNum} passed`)
-      } else {
-        console.error(`❌ Test ${testNum} failed: Expected unsigned value ${unsignedValue}, got ${asciiVal}`)
-      }
-
-      testNum++
-    })
+    testDataSigned.map(signedTestHandler)
+    testDataUnsigned.map(unsignedTestHandler)
   })

@@ -6,8 +6,8 @@ const abortWithErrMsg = errMsg => {
 }
 
 const abortWithUsage = () => abortWithErrMsg("Usage: node main.js 0x<32-bit value> <isSigned?: Boolean = false>")
-const abortWithInvalidArg2 = badArg => abortWithErrMsg(`Error: Bad value '${badArg}'. Please specify a value in 32-bit hexadecimal notation 0x00000000`)
-const abortWithInvalidArg3 = badArg => abortWithErrMsg(`Error: Bad value '${badArg}'. If specified, the 3rd argument must be either 'true' or 'false'`)
+const abortWithBadArg2 = badArg => abortWithErrMsg(`Error: Bad value '${badArg}'. Please specify a value in 32-bit hexadecimal notation 0x00000000`)
+const abortWithBadArg3 = badArg => abortWithErrMsg(`Error: Bad value '${badArg}'. If specified, the 3rd argument must be either 'true' or 'false'`)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export const startWasmModule =
@@ -28,14 +28,14 @@ export const validateArgs = args => {
 
   if (hexValue.length === 10 && hexValue.startsWith('0x') && !isNaN(+hexValue)) {
   } else {
-    abortWithInvalidArg2(hexValue)
+    abortWithBadArg2(hexValue)
   }
 
   // If a 3rd argument is present, it must be a Boolean
   let isSigned = false
 
   if (args.length > 3 && args[3] !== 'true' && args[3] !== 'false') {
-    abortWithInvalidArg3(args[3])
+    abortWithBadArg3(args[3])
   } else {
     isSigned = args[3] === 'true'
   }

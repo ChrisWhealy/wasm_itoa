@@ -16,9 +16,6 @@
   (global $output_ptr i32 (i32.const 0x0))
   (global $minus_sign i32 (i32.const 0x2D))  ;; ASCII "-"
 
-  ;; Maximum number of characters a 32-bit integer can occupy is 11 - 10 plus an optional minus sign
-  (data $output " 0000000000")
-
   ;; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   (func (export "itoa")
         (param $int_val   i32) ;; Value to convert
@@ -28,15 +25,8 @@
     (local $digit_ptr   i32)
     (local $is_negative i32)
 
+    ;; Maximum number of characters a 32-bit integer can occupy is 11 - 10 plus an optional minus sign
     (local.set $digit_ptr (i32.const 10))
-
-    ;; Initialise memory
-    (memory.init
-      $output                   ;; Using this initialisation data
-      (global.get $output_ptr)  ;; Start initialising memory from this offset
-      (i32.const 0)             ;; Copy bytes starting at this offset within data
-      (i32.const 11)            ;; Take this many bytes from data
-    )
 
     ;; Only convert the supplied value out of twos-complement if it is flagged as signed and is actually negative
     (if (i32.and (local.get $is_signed) (i32.lt_s (local.get $int_val) (i32.const 0)))
